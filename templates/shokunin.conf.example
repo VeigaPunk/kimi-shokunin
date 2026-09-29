@@ -1,0 +1,41 @@
+# shokunin.conf — kimi-shokunin fleet driver configuration
+# Copy this file to shokunin.conf and edit it. The driver (scripts/shokunin-watchdog.sh)
+# sources it. SSOT for the mission lives in MISSION.md + AXES.md at SHOKUNIN_ROOT; this
+# file only tells the driver where the fleet is and how to launch lanes.
+
+# Root of the fleet working tree — the repo holding MISSION.md, AXES.md, MANIFEST.json,
+# .ufo/. Empty string means "derive it from the driver's own location".
+SHOKUNIN_ROOT=""
+
+# Seconds between driver sweeps (upstream default: 450).
+TICK_SECONDS=450
+
+# Hard cap on rounds per lane (upstream default: 1024).
+ROUND_CAP=1024
+
+# Lanes, one per line:  <lane-id>|<repo, relative to SHOKUNIN_ROOT; "." = fleet repo>|<axes per AXES.md>
+# Axes are scored in each lane's SCORECARD.md; keep them short — they are the lane's
+# improvement contract, not a description.
+LANES="
+protocol|.|fleet-meta: protocol soundness, gate integrity
+aggregator|.|cross-lane quality, mint/dormancy calls, corpus review
+example|<example>-shokunin|operability + freshness (<domain phrase>)
+"
+
+# Substrate launch command. %C expands to the lane working directory, %P to the round
+# prompt file generated from templates/round-prompt.md. Placeholder shows a headless-style
+# kimi invocation — adjust to whatever substrate actually serves your lanes.
+SUBSTRATE_CMD='kimi --headless --cwd "%C" --prompt-file "%P"'
+
+# Route table: role -> model assignments for L2 subagents (planner, connector, executor,
+# scribe, scout, reviewer, critic, sentinel, ...). The HOST decides these per its own
+# model access; lane prompts reference role names only and never hardcode model aliases.
+# Shape example (do not copy aliases blindly):
+#   ROUTE_PLANNER=<model>      ROUTE_CONNECTOR=<model>
+#   ROUTE_EXECUTOR=<model>     ROUTE_SCRIBE=<model>     ROUTE_SCOUT=<model>
+#   ROUTE_REVIEWER=<model>     ROUTE_CRITIC=<model>
+
+# Push remotes. Lanes may push ONLY to the fleet repo remote and their own lane remote;
+# domain source trees are read-only. Name them here so the driver can enforce the scope:
+#   FLEET_REMOTE=<fleet-repo-remote>
+#   LANE_REMOTE_PATTERN='<lane-id>-shokunin'   # per-lane remote name pattern

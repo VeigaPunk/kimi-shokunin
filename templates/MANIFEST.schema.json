@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kimi-shokunin.local/templates/MANIFEST.schema.json",
+  "title": "kimi-shokunin MANIFEST",
+  "description": "Canonical fleet manifest. `roster` is the lane registry (unique by `id`). `rounds` is an append-only closure ledger: entries are never rewritten, prepended, or deleted — a wrong row is fixed by appending a closure-correction entry that carries `supersedes` pointing at the entry it replaces. Resolution is last-wins over (lane id, round): for a given lane and round, the latest entry carrying a row for that pair is the operative one. `closed_at` is required on any entry whose `lanes` map contains a not-dispatched row. Derived from the upstream shokunin MANIFEST.json (repo: shokunin, version 1); the schema describes shapes, not accumulated content.",
+  "type": "object",
+  "required": ["version", "repo", "protocol", "roster", "minting_rule", "rounds"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "manifest schema version"
+    },
+    "repo": {
+      "type": "string",
+      "description": "fleet repo name"
+    },
+    "protocol": {
+      "type": "string",
+      "description": "path to the protocol document, e.g. PROTOCOL.md"
+    },
+    "minting_rule": {
+      "type": "string",
+      "description": "the rank ladder in one sentence: shonen mint on proven domain demand; shokunin promotion on demonstrated end-to-end domain work; jin'i-ryu on self-iteration capability"
+    },
+    "roster": {
+      "type": "array",
+      "description": "lane registry; entries are unique by `id` and only integrator roles write them",
+      "items": { "$ref": "#/$defs/rosterEntry" }
+    },
+    "rounds": {
+      "type": "array",
+      "description": "append-only closure ledger; last-wins over (lane id, round)",
+      "items": { "$ref": "#/$defs/roundEntry" }
+    }
+  },
+  "$defs": {
+    "rosterEntry": {
+      "type": "object",
+      "required": ["id", "name", "domain", "rank", "repo", "minted"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "description": "short lane id, unique across the roster"
+        },
+        "name": {
+          "type": "string",
+          "description": "full lane name, conventionally <id>-shokunin"
+        },
+        "domain": {
+          "type": "string",
+          "description": "the lane's province in one line"
+        },
+        "rank": {
+          "enum": ["shonen", "shokunin", "jin'i-ryu"],
+          "description": "shonen = minted probationary lane; shokunin = promoted; jin'i-ryu = self-iterating"
+        },
+        "repo": {
+          "type": "string",
+          "description": "lane repo name (sibling of the fleet repo)"
+        },
+        "minted": {
+          "type": "string",
+          "format": "date",
+          "description": "roster admission date, YYYY-MM-DD"
+        }
+      }
+    },
+    "roundEntry": {
+      "type": "object",
+      "required": ["round", "date", "type"],
+      "properties": {
+        "round": {
+          "type": "number",
+          "description": "the fleet round this entry closes or annotates; fractional ids (e.g. 11.5) name between-round ledger events (mint, ops)"
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "type": {
+          "enum": ["scaffold", "work", "ops", "closure", "closure-correction", "retroactive-closure", "mint"],
+          "description": "scaffold = roster seeding; work = round record with lane statuses; ops = driver/runtime note; closure = per-lane-round closure with statuses; closure-correction = appended fix to a prior entry's rows (carries supersedes); retroactive-closure = evidence-only closure of a pre-regime round; mint = lane minted, roster row pending probation"
+        },
+        "closed_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "when the closure was recorded, ISO 8601 with numeric offset; REQUIRED whenever any lanes row is not-dispatched"
+        },
+        "lanes": {
+          "type": "object",
+          "description": "closure status per lane id present this round; in-flight is debt resolved by an appended closure-correction",
+          "propertyNames": { "pattern": "^[a-z0-9][a-z0-9-]*$" },
+          "additionalProperties": {
+            "enum": ["ok", "failed", "not-dispatched", "in-flight"],
+            "description": "ok = verified report landed; failed = dispatched but no conformant report; not-dispatched = no dispatch evidence exists; in-flight = still live at closure (debt)"
+          }
+        },
+        "lane_rounds": {
+          "type": "object",
+          "description": "lane id -> the lane's own round number the status refers to; makes not-dispatched rows falsifiable and ok rows derivable to a report path",
+          "propertyNames": { "pattern": "^[a-z0-9][a-z0-9-]*$" },
+          "additionalProperties": { "type": "integer", "minimum": 0 }
+        },
+        "minted": {
+          "type": "array",
+          "description": "lane ids minted (or ratified) by this entry; empty on ordinary rounds",
+          "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" }
+        },
+        "supersedes": {
+          "type": "object",
+          "description": "identifies the prior ledger entry whose rows this correction replaces; present only on closure-correction entries",
+          "required": ["round", "type", "date"],
+          "additionalProperties": false,
+          "properties": {
+            "round": { "type": "number" },
+            "type": { "type": "string" },
+            "date": { "type": "string", "format": "date" }
+          }
+        },
+        "protocol_updates": {
+          "type": "array",
+          "description": "protocol-document changes ratified by this entry",
+          "items": { "type": "string" }
+        },
+        "notes": {
+          "type": "string",
+          "description": "free-text evidence digest; cite paths and line numbers"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "lanes": {
+                "type": "object",
+                "comment": "holds when at least one lane status is not-dispatched: the inner schema passes iff every status differs from not-dispatched",
+                "not": {
+                  "patternProperties": {
+                    "^.*$": { "not": { "const": "not-dispatched" } }
+                  }
+                }
+              }
+            },
+            "required": ["lanes"]
+          },
+          "then": { "required": ["closed_at"] }
+        }
+      ]
+    }
+  }
+}

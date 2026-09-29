@@ -1,0 +1,22 @@
+{
+  "$schema": "https://kimi.com/schemas/kimi.plugin.schema.json",
+  "name": "kimi-shokunin",
+  "version": "0.1.0",
+  "description": "Shokunin fleet for Kimi Code CLI — auto agent creation with its own logic: mint domain-specialist agents from a canonical seed kit, iterate one-axis-move craft rounds, Pareto/verdict-judge every round.",
+  "license": "Apache-2.0",
+  "keywords": [
+    "shokunin",
+    "agent-creation",
+    "craft",
+    "fleet",
+    "axis-move"
+  ],
+  "author": "VeigaPunk",
+  "homepage": "https://github.com/VeigaPunk/kimi-shokunin",
+  "skills": "./skills/",
+  "commands": "./commands/",
+  "interface": {
+    "displayName": "Kimi Shokunin",
+    "shortDescription": "Shokunin auto-agent-creation fleet — /shokunin mints and iterates domain-specialist agents"
+  }
+}
