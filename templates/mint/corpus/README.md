@@ -1,11 +1,26 @@
 # <name>-shokunin corpus — index
 
-Proprietary memory for the <DOMAIN> domain. Every entry cites its source. Coverage map +
-open gaps grow with rounds.
+Proprietary memory for the <DOMAIN> domain. Every entry cites its source. Coverage map,
+frontier and open gaps grow with rounds (CORPUS.md, LEARNING.md). A row is written when
+its file exists, never before.
 
 ## Coverage map
 
 (empty — round 1 builds the first census)
+
+## Knowledge
+
+| entry | topic | source | verified-at |
+|---|---|---|---|
+
+## Lessons
+
+| entry | round | gist |
+|---|---|---|
+
+## Frontier
+
+- <area being explored and not yet held>
 
 ## Known gaps
 

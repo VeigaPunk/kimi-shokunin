@@ -39,6 +39,9 @@ On activation, load in this order — each layer is binding on the next:
 4. `skills/shokunin/protocol/AXES.md` + `skills/shokunin/protocol/CORPUS.md`
    — the six-axis framework and the corpus contract (`corpus/` index,
    `knowledge/`, `lessons/`).
+5. `skills/shokunin/protocol/LEARNING.md` — the learning path (curation →
+   quality gating → understanding → expanding perspective) and its three
+   per-round trend verdicts: expansion, quality, discernment.
 
 Files outside `protocol/` that matter at runtime: `templates/mint/` (the
 canonical 7-file seed kit), `templates/round-prompt.md` (fleet round prompt),

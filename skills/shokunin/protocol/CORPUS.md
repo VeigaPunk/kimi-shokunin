@@ -8,10 +8,15 @@ contain generic filler.
 
 ```
 corpus/
-  README.md        — index: what's here, coverage map, known gaps
+  README.md        — index: what's here, coverage map, known gaps, frontier
+  QUALITY.md       — the shokunin's own quality bar (LEARNING.md)
   knowledge/       — domain facts, sourced notes, decision records
   lessons/         — training lessons: what worked/failed this round and why
 ```
+
+Each `knowledge/` entry opens with `source:`, `verified-at:` and `recheck:`;
+each `lessons/round-<N>.md` carries a `## Gate` section (candidates,
+admitted, rejected with reasons, spot-check result). See `LEARNING.md`.
 
 ## Rules
 

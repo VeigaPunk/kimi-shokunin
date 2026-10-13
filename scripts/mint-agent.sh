@@ -64,7 +64,7 @@ fi
 # --- scaffold + substitute <name>/<lane>/<DOMAIN> (+ {{LANE}}/{{DOMAIN}}) ----
 mkdir -p "$LANE_DIR"
 cp -R "$TEMPLATES/." "$LANE_DIR/"
-dom_esc=$(printf '%s' "$DOMAIN" | sed -e 's/[&|]/\\&/g')
+dom_esc=$(printf '%s' "$DOMAIN" | sed -e 's/[\\&|/]/\\&/g')
 today=$(date +%F)
 find "$LANE_DIR" -type f -exec sed -i \
   -e "s/{{LANE}}/$ID/g" -e "s/{{DOMAIN}}/$dom_esc/g" \
@@ -81,7 +81,7 @@ git -C "$LANE_DIR" commit -q -m "mint: seed ${ID}-shokunin (${DOMAIN})"
 # --- register lane in shokunin.conf (LANES pipe-table row) -------------------
 {
   printf '\n# minted %s by mint-agent.sh\n' "$(date -Is)"
-  printf 'LANES="$LANES\\n%s|%s|%s"\n' "$ID" "${ID}-shokunin" "$DOMAIN"
+  printf 'LANES="$LANES\n%s|%s|%s"\n' "$ID" "${ID}-shokunin" "$DOMAIN"
 } >> "$CONF"
 
 echo "minted $LANE_DIR (seed commit: $(git -C "$LANE_DIR" rev-parse --short HEAD))"

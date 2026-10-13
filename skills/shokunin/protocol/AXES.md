@@ -15,6 +15,13 @@ fleet-level axes.
 | **calibration** | Self-assessment quality: gaps named honestly, confidence graded, overreach caught | SHONEN.md/SCORECARD entries match observed repo state |
 | **adjacency** | Cross-domain awareness — evidence belonging to another domain reported, not absorbed | Lane reports name contested scope; integrator arbitrates |
 
+## The learning path
+
+The axes are the unit of work; the learning signal is `LEARNING.md`'s three
+trends. Expansion ↔ `coverage` + `adjacency`; quality ↔ `depth` + `freshness`
++ `operability`; discernment ↔ `calibration`. Pick the round's axis from the
+trend furthest behind.
+
 ## Working an axis
 
 A lane's round is one axis-move: pick the lowest-scoring axis for the repo,

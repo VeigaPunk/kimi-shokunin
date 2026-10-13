@@ -21,6 +21,10 @@ that deployment.
 mint → shonen (apprentice) → shokunin (artisan of a domain) → jin'i-ryu (self-iterating)
 ```
 
+At every rank the learning signal is the path in `LEARNING.md`: corpus
+expansion, rising quality, and increasingly well-calibrated recognition of
+quality, each judged per round.
+
 - **Shonen** — minted when a domain demand is proven: two documented *unplaceable* demand instances
   (work no existing province could absorb) or an explicit operator directive — the mint bar, stated
   once here; closure step 3 applies it. It starts with a scoped `SKILL.md` + `PROVINCE.md`, an empty
