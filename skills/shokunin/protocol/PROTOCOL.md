@@ -39,7 +39,7 @@ quality, each judged per round.
   records the roster map it decided against — that scan record is part of the mint evidence; (b)
   create the sibling's repo dir `{id}-shokunin/` under the fleet root and its git remote
   (hosting operator-chosen; conventionally a single org/account owns `{id}-shokunin` remotes),
-  seeding the canonical files (SKILL.md, PROVINCE.md, SHONEN.md from the canonical template,
+  seeding the canonical files (SKILL.md, PROVINCE.md, HOURS.md, SHONEN.md from the canonical template,
   AGENTS.md, LOG.md) plus a `MINT.md` stating the reasoning, the cause, the
   demand instances with evidence pointers, the rejected roster fit, and the claimed domain boundary;
   (c) wire it into the driver — a lane declaration in `shokunin.conf` (cwd under the fleet root,
@@ -76,6 +76,32 @@ the promoter's lane report and the repo's `LOG.md`.
 - **shokunin → jin'i-ryu.** At least one logged round in which the shokunin — given the round's
   telemetry — proposed and landed a falsifiable improvement to its own `SKILL.md`/`PROVINCE.md`. The
   delta and its falsification condition are recorded in `LOG.md`.
+
+## Craft-hours — the 10,000-hour bar
+
+A shonen becomes a shokunin only after **10,000 verified craft-hours** in its domain — the
+mastery horizon, borrowed from the craft tradition the name comes from.
+
+- **A craft-hour is one hour of verified in-domain lane work.** Time is *collective*: an N-lane
+  swarm wave spending T minutes of in-domain work logs N×T craft-minutes. Parallelization is the
+  intended accelerator — swarms compress calendar time, never the substance, because every logged
+  lane-minute must be executed work with its evidence, and verification rules are unchanged by
+  lane count.
+- **Ledger.** Each lane keeps `HOURS.md` at repo root, append-only, one row per round:
+  `round | lanes | in-domain lane-min | verified | evidence | cumulative (h)`. `verified` carries
+  `[x]` (non-author evidenced) or `[~]` (lane-asserted with pointer); the cumulative column is the
+  number the promotion gate reads.
+- **What counts.** Only in-domain work accrues: meta, protocol, fleet-ops and other lanes'
+  provinces log zero toward this lane. Honest rejected candidates still accrue — discernment
+  practice is practice — provided the round itself executed and reported. A fabricated or
+  unverifiable entry voids its row (artifact-trust rule) and is a protocol violation.
+- **Retroactive crediting.** Pre-ledger rounds may be credited only by recomputation from
+  artifacts (round reports, wave dirs, dispatch/commit timestamps) and are marked `[~]` estimate
+  or `[x]` evidenced — never freehand numbers.
+- **Necessary, never sufficient.** The floor is an additional requirement on top of the SHONEN
+  checklist: a lane cannot burn idle or rubber-stamped lane-time into rank, because the gate
+  still demands demonstrated artifacts checked by reviewers who did not author them. Hours buy
+  depth; the gate buys demonstrated competence; both are required.
 
 ## Round-robin rounds
 
@@ -426,6 +452,7 @@ The canonical `SHONEN.md` seed (verbatim — `<name>` is the only substitution):
     - [ ] At least one end-to-end domain task executed and logged in LOG.md
     - [ ] Instructions executable by an agent without oral context
     - [ ] No cross-domain bleed (PROVINCE.md still accurate)
+    - [ ] ≥10,000 verified craft-hours in HOURS.md (§Craft-hours)
 
 Marks: `[~]` asserted by the lane itself (evidence pointer required), `[x]` only with a named
 non-author verifier per **Promotion gates**.

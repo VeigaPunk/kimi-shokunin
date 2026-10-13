@@ -12,3 +12,4 @@ Promotion to shokunin requires all of:
 - [ ] At least one end-to-end domain task executed and logged in LOG.md
 - [ ] Instructions executable by an agent without oral context
 - [ ] No cross-domain bleed (PROVINCE.md still accurate)
+- [ ] ≥10,000 verified craft-hours in HOURS.md (§Craft-hours)
