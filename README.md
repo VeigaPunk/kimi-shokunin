@@ -14,6 +14,8 @@ A round is admitted only if at least one axis improved and none were harmed;
 evidence is the currency, and lane identity (`<id>-shokunin <<id>@shokunin.local>`)
 rides in every commit.
 
+**Wiki:** [Devin wiki](https://app.devin.ai/org/veigapunk/wiki/VeigaPunk/kimi-shokunin?branch=main)
+
 ## What's inside
 
 ```
