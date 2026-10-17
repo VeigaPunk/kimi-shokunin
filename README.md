@@ -14,6 +14,11 @@ A round is admitted only if at least one axis improved and none were harmed;
 evidence is the currency, and lane identity (`<id>-shokunin <<id>@shokunin.local>`)
 rides in every commit.
 
+This plugin is the **portable Kimi Code CLI substrate** for that contract:
+the protocol files, the mint kit, the `/shokunin` command, and a
+host-neutral fleet watchdog. The private fleet root lives at
+[VeigaPunk/shokunin](https://github.com/VeigaPunk/shokunin).
+
 ## What's inside
 
 ```
@@ -65,6 +70,12 @@ Kimi invocation — point it at whatever substrate serves your lanes. Touch
 One axis-move per round, verdicts not scores, evidence or it didn't happen,
 lane identity in every commit.
 
+This skill is **not UFO**. UFO runs a multi-axis Pareto seat map over
+generalist work. Shokunin mints *one-province* specialists and judges them
+per axis. Never describe a shokunin round as "passing Pareto", never import
+the UFO seat map, never blend verdicts into a scalar. The distinction is
+load-bearing — see `skills/shokunin/SKILL.md`.
+
 ## Install
 
 From a Kimi Code CLI session:
@@ -78,6 +89,24 @@ Local dev: `/plugins install /path/to/kimi-shokunin`, then `/reload`.
 `./install.sh` runs the sanity gate (required files, mint-kit shape,
 `bash -n`, manifest JSON) before you install.
 
+## What a mint produces
+
+`templates/mint/` seeds the seven files a lane cannot live without:
+
+| File | Job |
+|---|---|
+| `SKILL.md` | executable craft: decision tables, error patterns, checklists |
+| `PROVINCE.md` | owned surfaces and hard refusals |
+| `SHONEN.md` | promotion checklist (deleted on promotion) |
+| `LOG.md` | append-only evidence trail |
+| `MINT.md` | why this lane exists, roster scan, rejected fits |
+| `AGENTS.md` | operating rules for anyone writing the repo |
+| `SCORECARD.md` | per-axis verdicts with counting commands |
+
+A mint is refused unless the demand is unplaceable (two documented
+instances no existing province could absorb) or the operator directed it.
+The mint bar is enforced *before* files are written.
+
 ## Provenance
 
 Upstream shokunin lives at [github.com/VeigaPunk/shokunin](https://github.com/VeigaPunk/shokunin)
@@ -85,3 +114,5 @@ Upstream shokunin lives at [github.com/VeigaPunk/shokunin](https://github.com/Ve
 contract, mint kit, and round templates ship in-tree, and the fleet driver is
 re-parameterized to run through `SUBSTRATE_CMD` with no hardcoded hosts,
 models, or absolute paths.
+
+License: Apache-2.0 (`LICENSE`).
