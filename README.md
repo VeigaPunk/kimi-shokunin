@@ -1,18 +1,8 @@
-# kimi-shokunin — Shokunin auto-agent-creation fleet for Kimi Code CLI
+# kimi-shokunin — 職人, for Kimi Code CLI
 
-Shokunin (職人, artisan) is a self-improving fleet of domain-specialist
-agents, iterated by swarm rounds — auto agent creation with its own logic
-instead of absorbing every new demand into a generalist. Each lane's
-lifecycle is mint → shonen (apprentice, probation of ≥3 verified rounds) →
-shokunin (promoted by a named non-author verifier checking every SHONEN box)
-→ jin'i-ryu (self-iterating). Every round is ONE axis-move against six axes
-(depth, coverage, operability, freshness, calibration, adjacency): pick the
-lane's lowest axis, declare a falsifiable claim, land one verifiable
-improvement, measure before→after, and judge every axis with a verdict —
-improved / harmed / unchanged / unprovable-but-better, never a scalar score.
-A round is admitted only if at least one axis improved and none were harmed;
-evidence is the currency, and lane identity (`<id>-shokunin <<id>@shokunin.local>`)
-rides in every commit.
+This plugin is the portable Kimi Code CLI adaptation of the shokunin fleet: auto agent creation with its own logic, instead of folding every new demand into a generalist (`README` contract, `kimi.plugin.json`).
+
+The lifecycle the protocol describes, kept from the previous front door: mint, then shonen (apprentice, probation of at least three verified rounds), then shokunin (promoted only when a named non-author verifier checks every SHONEN box), then jin'i-ryu (self-iterating). Every round is one axis-move against six axes (depth, coverage, operability, freshness, calibration, adjacency). A round is admitted only if at least one axis improved and none were harmed. Lane identity (`<id>-shokunin <<id>@shokunin.local>`) rides in every commit. This repository is the plugin. It does not ship a `LOG.md`, and this change does not add one.
 
 **Wiki:** [Devin wiki](https://app.devin.ai/org/veigapunk/wiki/VeigaPunk/kimi-shokunin?branch=main)
 
@@ -39,6 +29,8 @@ kimi-shokunin/
     └── mint-agent.sh           non-interactive mint scaffold + wiring
 ```
 
+`LICENSE` is also at the repo root.
+
 ## Quick start
 
 In-session (single craft round on the current target):
@@ -56,16 +48,19 @@ cp templates/shokunin.conf.example shokunin.conf   # edit the LANES table + SUBS
 scripts/shokunin-watchdog.sh                       # or: SHOKUNIN_CONF=/path/to/shokunin.conf
 ```
 
-`SUBSTRATE_CMD` (set in the conf) is the substrate-neutral lane launcher: a
-shell command in which `%C` expands to the lane working directory and `%P` to
-the rendered round-prompt file. The shipped example shows a headless-style
-Kimi invocation — point it at whatever substrate serves your lanes. Touch
-`.ufo/fleet-wrap` to halt respawns; remove it to resume.
+`SUBSTRATE_CMD` (set in the conf) is the substrate-neutral lane launcher: a shell command in which `%C` expands to the lane working directory and `%P` to the rendered round-prompt file. The shipped example shows a headless-style Kimi invocation. Point it at whatever substrate serves your lanes. Touch `.ufo/fleet-wrap` to halt respawns; remove it to resume.
+
+Non-interactive mint, from `scripts/mint-agent.sh`:
+
+```sh
+scripts/mint-agent.sh --id <id> --domain "<domain>" --fleet-root <dir>
+```
+
+The mint bar is enforced by `/shokunin` before that script runs. The script does not fabricate mint-bar evidence (`scripts/mint-agent.sh` header).
 
 ## Contract in one line
 
-One axis-move per round, verdicts not scores, evidence or it didn't happen,
-lane identity in every commit.
+One axis-move per round, verdicts not scores, evidence or it didn't happen, lane identity in every commit.
 
 ## Install
 
@@ -76,14 +71,8 @@ From a Kimi Code CLI session:
 /reload
 ```
 
-Local dev: `/plugins install /path/to/kimi-shokunin`, then `/reload`.
-`./install.sh` runs the sanity gate (required files, mint-kit shape,
-`bash -n`, manifest JSON) before you install.
+Local dev: `/plugins install /path/to/kimi-shokunin`, then `/reload`. `./install.sh` runs the sanity gate (required files, mint-kit shape, `bash -n`, manifest JSON) before you install. `install.sh --help` prints that usage. The script does not modify host config.
 
 ## Provenance
 
-Upstream shokunin lives at [github.com/VeigaPunk/shokunin](https://github.com/VeigaPunk/shokunin)
-(private). This plugin is the portable Kimi Code CLI adaptation: the protocol
-contract, mint kit, and round templates ship in-tree, and the fleet driver is
-re-parameterized to run through `SUBSTRATE_CMD` with no hardcoded hosts,
-models, or absolute paths.
+Upstream shokunin lives at [github.com/VeigaPunk/shokunin](https://github.com/VeigaPunk/shokunin) (private). This plugin is the portable Kimi Code CLI adaptation: the protocol contract, mint kit, and round templates ship in-tree, and the fleet driver is re-parameterized to run through `SUBSTRATE_CMD` with no hardcoded hosts, models, or absolute paths.
