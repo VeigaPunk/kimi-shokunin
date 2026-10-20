@@ -2,7 +2,7 @@
 # kimi-shokunin plugin installer — sanity checks + install instructions.
 # Does NOT install the plugin itself; use Kimi Code CLI (see below).
 set -eu
-STAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+STAGE_DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 usage() {
   cat <<'EOF'
 Usage: install.sh [--help]
@@ -14,27 +14,37 @@ Local dev: /plugins install /path/to/kimi-shokunin, then /reload.
 EOF
 }
 
-while [ "$#" -gt 0 ]; do
+if [ "$#" -gt 0 ]; then
   case "$1" in
     --help|-h) usage; exit 0 ;;
     *) echo "ERROR: unknown option: $1" >&2; usage >&2; exit 1 ;;
   esac
-  shift
-done
+fi
 fail() { echo "ERROR: $*" >&2; exit 1; }
 echo "[kimi-shokunin] Sanity checks"
 # protocol/ + templates/ have their own owners; gate them here so a partial
 # tree fails loudly before install.
 for f in kimi.plugin.json README.md LICENSE .gitignore commands/shokunin.md \
-         skills/shokunin/SKILL.md scripts/shokunin-watchdog.sh scripts/mint-agent.sh \
-         templates/round-prompt.md templates/MANIFEST.schema.json templates/shokunin.conf.example; do
+         skills/shokunin/SKILL.md scripts/shokunin-watchdog.sh scripts/sources-census.sh \
+         scripts/mint-agent.sh templates/round-prompt.md templates/MANIFEST.schema.json \
+         templates/shokunin.conf.example templates/mint/corpus/SOURCES.md; do
   [ -f "$STAGE_DIR/$f" ] || fail "missing required file: $f"
+done
+for f in scripts/fixtures/sources-census/root/shokunin.conf \
+         scripts/fixtures/sources-census/root/a-shokunin/corpus/SOURCES.md \
+         scripts/fixtures/sources-census/root/a-shokunin/corpus/knowledge/real.md \
+         scripts/fixtures/sources-census/root/b-shokunin/corpus/SOURCES.md \
+         scripts/fixtures/sources-census/root/c-shokunin/corpus/SOURCES.md \
+         scripts/fixtures/sources-census/root/c-shokunin/corpus/knowledge/real.md \
+         scripts/fixtures/sources-census/root/z-shokunin/corpus/SOURCES.md \
+         scripts/fixtures/sources-census/injection-shokunin/corpus/SOURCES.md; do
+  [ -f "$STAGE_DIR/$f" ] || fail "missing census selftest fixture: $f"
 done
 [ -d "$STAGE_DIR/templates/mint" ] || fail "missing dir: templates/mint"
 kit_files=$(find "$STAGE_DIR/templates/mint" -maxdepth 1 -type f | wc -l)
-[ "$kit_files" -eq 7 ] || fail "templates/mint must contain exactly 7 files (found $kit_files)"
-echo "[kimi-shokunin] required files OK (mint kit: 7 files)"
-for s in scripts/shokunin-watchdog.sh scripts/mint-agent.sh; do
+[ "$kit_files" -eq 7 ] || fail "templates/mint must contain exactly 7 root files (found $kit_files)"
+echo "[kimi-shokunin] required files OK (mint kit: 7 root files + corpus seeds; census fixtures OK)"
+for s in scripts/shokunin-watchdog.sh scripts/sources-census.sh scripts/mint-agent.sh; do
   bash -n "$STAGE_DIR/$s" || fail "$s failed bash -n"
 done
 echo "[kimi-shokunin] script syntax OK"

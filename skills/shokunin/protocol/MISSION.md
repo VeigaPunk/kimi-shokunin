@@ -6,15 +6,16 @@ by steer.
 
 ## Fleet shape (declared config)
 
-Lanes are declared in `shokunin.conf` at the fleet root — the driver reads the
-config each tick; nothing is hardcoded in `scripts/shokunin-watchdog.sh`. Each
-lane declaration carries `id`, `cwd` (a repo under `$SHOKUNIN_ROOT` — the two
-main-repo lanes point at the fleet root itself), `route` (a route name resolved
-through the host model route table, never a bare model alias), and `axes`
-(owned axes per `AXES.md`). All L1 lanes dispatch on the `swe`-class route of
-the host model route table.
+Lanes are declared in `shokunin.conf` at the fleet root. The driver sources this
+configuration once at startup and does not reload it each tick. Each `LANES` row
+is `<id>|<repo>|<axes>`; `repo` is relative to `$SHONOKIN_ROOT`, and `.` means
+the fleet root. The driver derives each lane's working directory from `repo`.
+Rows have no per-lane route field. Runtime model selection is determined by
+`SUBSTRATE_CMD` and the host/operator's global model routing.
 
-Initial config (the upstream fleet's nine lanes, axes preserved):
+Historical example — the upstream fleet's initial nine-lane roster, in its
+original YAML shape; not a current roster or the current `LANES` syntax (axes
+preserved):
 
 ```yaml
 lanes:
@@ -27,7 +28,7 @@ lanes:
   kotoba:     { cwd: kotoba-shokunin/, axes: "depth + consistency (prompt/skill craft)" }
   kagi:       { cwd: kagi-shokunin/,   axes: "freshness + calibration (secrets/vault ops)" }
   kama:       { cwd: kama-shokunin/,   axes: "operability + freshness (local model serving/endpoints)" }
-# every lane: route: swe   (resolved via the host model route table)
+# Historical YAML only; current LANES rows use <id>|<repo>|<axes>.
 ```
 
 Round-robin across lanes; `respawn-per-round`: a round ends when
@@ -38,20 +39,35 @@ mission and launches a fresh process for round N+1. Cap: 1024/lane. Tick: 450s.
 ## The axes framework
 
 `AXES.md` defines the six expertise axes (depth, coverage, operability,
-freshness, calibration, adjacency). A lane's round is **one axis-move**: pick
-the lowest-scoring axis in `SCORECARD.md`, land one verifiable improvement,
-measure it, record before→after in `SCORECARD.md`, log evidence in `LOG.md`.
+freshness, calibration, adjacency). A lane's round declares **1–3 claims**,
+each an axis-move on a distinct axis with its own falsifiable before→after (at
+least one on the lane's lowest non-retired axis; a claim may be a capability
+acquisition or an exploratory taste-bound claim per `AXES.md` — exploratory
+claims verify only as `unprovable-but-better` with a named non-author reviewer
+on record): land the improvements, measure each, record before→after per claim
+in `SCORECARD.md`, log evidence in `LOG.md`. A round admits only when every
+claim verifies and no axis is harmed.
 Axes may be retired on saturation or split into sub-axes — recorded in
 `SCORECARD.md` with the reason. Axis assignments in `shokunin.conf` are initial;
 lanes may add/remove axes on evidence (falsifiable claim per move).
+
+## Frontier step
+
+Every child-lane round curates `corpus/SOURCES.md` under the versioned contract
+in `CORPUS.md`, mines one mistake into its lesson (or records the sweep that
+found none), and cites at least one opened source row (`S###`) in a round claim.
+This step is part of the round, not an additional claim. Main-repo lanes without
+a corpus do not run the child-lane step; their report records
+`SOURCES: unchanged — main-repo lanes hold no corpus/`.
 
 ## L2 concurrency — required
 
 Every L1 lane MUST dispatch **at least 8 L2 subagents per round**, in **one
 batched AgentSwarm call** (the Kimi host surface) — one call carrying all lanes,
 not a sequence of individual dispatches. Roles are expressed as lane roles and
-routed through the host model route table (persisted globally in
-`shokunin.conf` + the operator's route override file):
+routed through the operator's global host model table; `shokunin.conf` carries no
+per-role route pins. The grouping below is advisory to host routing, not a
+driver-enforced route assignment:
 
 | Role class | Route bucket |
 |---|---|
@@ -63,11 +79,12 @@ routed through the host model route table (persisted globally in
 
 Dispatch prompts are generated from the shipped ROUND-PROMPT template
 (`templates/round-prompt.md`), which embeds the full round contract verbatim:
-mission/axes binding, the axis-move rule, the L2 floor (≥8 lanes, one batched
-AgentSwarm call), the report path with its required sections (the five
-child-lane items), commit-then-push ordering, push scope, and the L0 side
-channel. Prompt generation binds to this file; the closure step-1 fidelity
-check grades each round's committed `.ufo/prompts/*.md` against the template.
+mission/axes binding, the 1–3 claim rule, the child-lane frontier step, the L2
+floor (≥8 lanes, one batched AgentSwarm call), the report path and its required
+sections (work, landed changes, before→after measurements, Sources & frontier,
+trend verdicts, SHONEN), commit-then-push ordering, push scope, and the L0 side
+channel. Prompt generation binds to this file; closure grades committed
+dispatch prompts against the template.
 
 ## Round end
 

@@ -4,7 +4,8 @@
 # file only tells the driver where the fleet is and how to launch lanes.
 
 # Root of the fleet working tree — the repo holding MISSION.md, AXES.md, MANIFEST.json,
-# .ufo/. Empty string means "derive it from the driver's own location".
+# .ufo/, plus templates/round-prompt.md and scripts/sources-census.sh required by the
+# driver and child-lane prompts. Empty string means "derive it from the driver's own location".
 SHOKUNIN_ROOT=""
 
 # Seconds between driver sweeps (upstream default: 450).

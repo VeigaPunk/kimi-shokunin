@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# mint-agent.sh — non-interactive lane mint (Kimi port of the upstream
-# sibling-mint mechanic). Scaffolds <fleet-root>/<id>-shokunin/ from the
+# mint-agent.sh — non-interactive lane mint using the canonical
+# sibling-mint mechanic. Scaffolds <fleet-root>/<id>-shokunin/ from the
 # canonical seed kit, wires git identity + shokunin.conf, prints probation.
 #
 #   scripts/mint-agent.sh --id <id> --domain "<domain>" --fleet-root <dir>
@@ -16,7 +16,7 @@
 # runs; MINT.md in the seed kit carries the evidence record.
 set -eu
 
-PLUGIN_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+PLUGIN_ROOT=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
 TEMPLATES=${MINT_TEMPLATES:-"$PLUGIN_ROOT/templates/mint"}
 
 usage() {
@@ -81,6 +81,7 @@ git -C "$LANE_DIR" commit -q -m "mint: seed ${ID}-shokunin (${DOMAIN})"
 # --- register lane in shokunin.conf (LANES pipe-table row) -------------------
 {
   printf '\n# minted %s by mint-agent.sh\n' "$(date -Is)"
+  # shellcheck disable=SC2016  # emit literal $LANES for expansion by the sourced conf
   printf 'LANES="$LANES\n%s|%s|%s"\n' "$ID" "${ID}-shokunin" "$DOMAIN"
 } >> "$CONF"
 
@@ -89,9 +90,9 @@ cat <<EOF
 
 Probation (shonen) checklist for ${ID}-shokunin:
   [ ] MINT.md names the cause, demand instances + evidence pointers, rejected roster fit, domain boundary
-  [ ] round 1: verified one-axis-move round; report .ufo/reports/round-<N>/${ID}.md with real content
-  [ ] round 2: verified one-axis-move round
-  [ ] round 3: verified one-axis-move round
+  [ ] round 1: verified 1–3-claim round + frontier step (source census, mistake lesson, sourced claim)
+  [ ] round 2: verified 1–3-claim round + frontier step
+  [ ] round 3: verified 1–3-claim round + frontier step
   [ ] probation recorded as a MANIFEST.json rounds[] entry of type "mint" — NO roster row before this
   [ ] every SHONEN.md box checked by a NAMED NON-AUTHOR verifier ([x] <verifier-id> + evidence pointer); self-marks are [~]
 Only the operator adds the MANIFEST.json roster row after probation completes.

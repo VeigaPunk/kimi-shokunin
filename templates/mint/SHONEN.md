@@ -1,8 +1,8 @@
 <!-- CANONICAL TEMPLATE: the block below must stay byte-identical to the canonical
-     SHONEN.md seed in PROTOCOL.md (upstream main repo, master HEAD, block headed
-     "The canonical `SHONEN.md` seed (verbatim -- <name> is the only substitution)",
-     lines 386-393), modulo <name> = the minted repo directory name. Regenerate from
-     PROTOCOL.md on gate changes; never hand-edit. -->
+     SHONEN.md seed in this repository's PROTOCOL.md, under the heading
+     "The canonical `SHONEN.md` seed (verbatim — `<name>` is the only substitution)",
+     modulo <name> = the minted repo directory name. Regenerate from PROTOCOL.md
+     when the gate changes; never hand-edit. -->
 
 # <name> — Promotion checklist
 

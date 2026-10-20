@@ -8,14 +8,17 @@ round:
 
 1. **Curation** — gather candidate material from the domain's real surfaces
    (sources, tools, artifacts, practitioners' records, the lane's own work).
-   Every candidate is judged before it is admitted.
+   Every candidate is judged before it is admitted. Opened sources and
+   rejected ones are curated in `corpus/SOURCES.md` (`CORPUS.md`).
 2. **Quality gating** — admit into `corpus/knowledge/` only what clears the
    shokunin's own bar in `corpus/QUALITY.md`. Every rejection is logged with
    its reason; a rejection is evidence of taste, not wasted work.
 3. **Understanding** — distill what was admitted: connect entries, state the
    principle behind them, fold durable understanding into `SKILL.md`
    (decision tables, error patterns, checklists), and sharpen `QUALITY.md`
-   from what the gate got right and wrong.
+   from what the gate got right and wrong. Mistakes are mined too: each
+   becomes a row in the round lesson's `## Mistakes` and, when no criterion
+   caught it, a `QUALITY.md` criterion citing that lesson.
 4. **Expanding perspective** — work the province frontier: adjacent
    sub-areas, other tools, schools and viewpoints, counter-examples and
    failure cases. The province grows by evidence, not by declaration.
@@ -27,7 +30,7 @@ Verdicts use the protocol vocabulary (`improved`, `harmed`, `unchanged`,
 
 | Trend | Observable | `improved` when | `harmed` when |
 |---|---|---|---|
-| **expansion** | admitted `knowledge/` entries on ground the coverage map did not hold; frontier areas entered; new kinds of source | net new admitted entries on uncovered ground, each citing its coverage-map row | an admitted entry fails the bar it was admitted under |
+| **expansion** | admitted `knowledge/` entries on ground the coverage map did not hold, each `source:` citing a `mined` `corpus/SOURCES.md` row (`own-work` rows included); frontier areas entered; new kinds of source; a capability admitted to `SCORECARD.md` | net new admitted entries on uncovered ground, each citing its coverage-map row | an admitted entry fails the bar it was admitted under |
 | **quality** | entries re-verified, deepened, or superseded by stronger ones; `verified-at` freshness | a weaker entry is superseded by a stronger one, or stale entries re-verify, with no admitted entry failing its re-check | an entry is found false or stale and left unmarked |
 | **discernment** | gate decisions vs the outside spot-check; `QUALITY.md` criteria | the spot-check agrees with the gate on admits *and* rejects, or a disagreement becomes a lesson that adds a grounded `QUALITY.md` criterion | a disagreement is left unlearned, or a criterion is added with no lesson behind it |
 
@@ -42,6 +45,10 @@ decisions, **at least one admit and one reject**, and records
 `agree`/`disagree` with a reason in the round's lesson. A subagent the lane
 dispatched is still the lane.
 
+An exploratory round claim (`unprovable-but-better`) is admitted only through
+this gate: a named non-author reviewer judges the change better with reasons
+on record — never through self-attestation.
+
 Operator teaching outranks every other source. A teaching lands verbatim as
 `corpus/lessons/operator-<YYYY-MM-DD>-<slug>.md`; by the lane's next round it
 must be reflected in `QUALITY.md` or `SKILL.md`, with the lesson cited, or the
@@ -54,12 +61,16 @@ round reports why not.
   criteria. Thin at mint; every criterion cites the lesson that produced it.
   Criteria are superseded by new rows that name the row they replace, never
   rewritten.
+- `corpus/SOURCES.md` — where the shokunin learns: opened sources with scoped
+  tiers, rejections with reasons, study paths, and the search log
+  (`CORPUS.md` §SOURCES.md, contract v1).
 - `corpus/README.md` — the coverage map plus a `## Frontier` list of areas
   being explored and not yet held.
 - `corpus/knowledge/<slug>.md` — opens with `source:`, `verified-at:` (commit
   or date) and `recheck:` (the command or citation that re-verifies it).
 - `corpus/lessons/round-<N>.md` — carries a `## Gate` section: candidates
-  considered, admitted, rejected (with reasons), and the spot-check result.
+  considered, admitted, rejected (with reasons), and the spot-check result;
+  a round that mines mistakes adds `## Mistakes` (`CORPUS.md`).
 
 ## Province is a frontier, not a fence
 
@@ -75,4 +86,5 @@ absorbed.
 The trends are the learning signal; `AXES.md` axis-moves remain the unit of
 work. Expansion is served by `coverage` and `adjacency`; quality by `depth`,
 `freshness` and `operability`; discernment by `calibration`. Choose a round's
-one axis-move from the trend that is furthest behind.
+claims from the trend that is furthest behind; when the quality axes saturate,
+expansion continues through the capabilities table (`AXES.md`, section *Capabilities*).

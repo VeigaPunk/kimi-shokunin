@@ -1,6 +1,6 @@
 # Reference example — kama mint evidence (MINT.md)
 
-Verbatim copy of `MINT.md` from the one fully-recorded upstream mint: the
+Verbatim copy of `MINT.md` from a fully recorded fleet mint: the
 `kama-shokunin` lane (local model serving & endpoint health domain), nested repo
 `Projects/shokunin/kama-shokunin`, seed commit 9cee9fc ("seed: kama shonen",
 authored 2026-09-28 as `kama-shokunin <kama@shokunin.local>`). This is the worked

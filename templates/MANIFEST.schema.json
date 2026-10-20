@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://kimi-shokunin.local/templates/MANIFEST.schema.json",
   "title": "kimi-shokunin MANIFEST",
-  "description": "Canonical fleet manifest. `roster` is the lane registry (unique by `id`). `rounds` is an append-only closure ledger: entries are never rewritten, prepended, or deleted — a wrong row is fixed by appending a closure-correction entry that carries `supersedes` pointing at the entry it replaces. Resolution is last-wins over (lane id, round): for a given lane and round, the latest entry carrying a row for that pair is the operative one. `closed_at` is required on any entry whose `lanes` map contains a not-dispatched row. Derived from the upstream shokunin MANIFEST.json (repo: shokunin, version 1); the schema describes shapes, not accumulated content.",
+  "description": "Schema for a portable shokunin manifest governed by this repository's canonical protocol. `roster` is the lane registry (unique by `id`). `rounds` is an append-only closure ledger: entries are never rewritten, prepended, or deleted — a wrong row is fixed by appending a closure-correction entry that carries `supersedes` pointing at the entry it replaces. Resolution is last-wins over (lane id, round): for a given lane and round, the latest entry carrying a row for that pair is the operative one. `closed_at` is required on any entry whose `lanes` map contains a not-dispatched row. A fleet copy is a vendored artifact and records the canonical revision it copies; its local history does not override this protocol.",
   "type": "object",
   "required": ["version", "repo", "protocol", "roster", "minting_rule", "rounds"],
   "additionalProperties": false,
@@ -31,7 +31,7 @@
     },
     "rounds": {
       "type": "array",
-      "description": "append-only closure ledger; last-wins over (lane id, round)",
+      "description": "append-only closure ledger; last-wins over (lane id, round). Pre-regime historical entries may be retained even if they do not validate against this schema; every new canonical append must validate against the current constraints.",
       "items": { "$ref": "#/$defs/roundEntry" }
     }
   },
@@ -77,6 +77,16 @@
           "type": "number",
           "description": "the fleet round this entry closes or annotates; fractional ids (e.g. 11.5) name between-round ledger events (mint, ops)"
         },
+        "lane": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "description": "lane id for a future lane-specific closure entry"
+        },
+        "lane_round": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "the lane's own round number for a future lane-specific closure entry"
+        },
         "date": {
           "type": "string",
           "format": "date"
@@ -105,6 +115,17 @@
           "propertyNames": { "pattern": "^[a-z0-9][a-z0-9-]*$" },
           "additionalProperties": { "type": "integer", "minimum": 0 }
         },
+        "trends": {
+          "type": "object",
+          "description": "one evidence-backed Learning Path verdict per trend on future closure entries",
+          "required": ["expansion", "quality", "discernment"],
+          "additionalProperties": false,
+          "properties": {
+            "expansion": { "$ref": "#/$defs/trendVerdict" },
+            "quality": { "$ref": "#/$defs/trendVerdict" },
+            "discernment": { "$ref": "#/$defs/trendVerdict" }
+          }
+        },
         "minted": {
           "type": "array",
           "description": "lane ids minted (or ratified) by this entry; empty on ordinary rounds",
@@ -118,7 +139,12 @@
           "properties": {
             "round": { "type": "number" },
             "type": { "type": "string" },
-            "date": { "type": "string", "format": "date" }
+            "date": { "type": "string", "format": "date" },
+            "entry": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "zero-based array index disambiguating otherwise identical prior entries"
+            }
           }
         },
         "protocol_updates": {
@@ -150,6 +176,11 @@
           "then": { "required": ["closed_at"] }
         }
       ]
+    },
+    "trendVerdict": {
+      "type": "string",
+      "enum": ["improved", "harmed", "unchanged", "unprovable-but-better"],
+      "description": "one non-scalar Learning Path trend verdict"
     }
   }
 }

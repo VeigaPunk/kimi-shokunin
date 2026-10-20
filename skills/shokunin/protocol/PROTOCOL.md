@@ -12,9 +12,8 @@ operator). Fleet state lives under `$SHOKUNIN_ROOT/.ufo/` (`state/`, `prompts/`,
 under `$SHOKUNIN_ROOT/<id>-shokunin/`. The driver launches a lane process via the configured
 substrate command (see `scripts/shokunin-watchdog.sh`), resolving models through the host model
 route table (see `shokunin.conf`); nothing in this file depends on a specific substrate CLI or
-model alias. The upstream fleet ran on one specific substrate and model aliases — every rule here
-is substrate-neutral, and the appendix's host notes mark the places where an incident row cites
-that deployment.
+model alias. The originating fleet deployment used one specific substrate and model aliases — every rule here
+is substrate-neutral, and appendix host notes identify incidents that cite that deployment.
 
 ## Lifecycle
 ```
@@ -39,9 +38,10 @@ quality, each judged per round.
   records the roster map it decided against — that scan record is part of the mint evidence; (b)
   create the sibling's repo dir `{id}-shokunin/` under the fleet root and its git remote
   (hosting operator-chosen; conventionally a single org/account owns `{id}-shokunin` remotes),
-  seeding the canonical files (SKILL.md, PROVINCE.md, SHONEN.md from the canonical template,
-  AGENTS.md, LOG.md) plus a `MINT.md` stating the reasoning, the cause, the
-  demand instances with evidence pointers, the rejected roster fit, and the claimed domain boundary;
+  seeding its canonical files (SKILL.md, PROVINCE.md, SHONEN.md from the canonical template,
+  AGENTS.md, LOG.md, and the empty `corpus/SOURCES.md` registry) plus a `MINT.md` stating the
+  reasoning, the cause, the demand instances with evidence pointers, the rejected roster fit,
+  and the claimed domain boundary;
   (c) wire it into the driver — a lane declaration in `shokunin.conf` (cwd under the fleet root,
   model route, axes; operator-side integrator work,
   surfaced in `.ufo/l0-questions.md` if the lane lacks the route map); the sibling
@@ -93,14 +93,16 @@ start of every steered round; a long-lived mission does not grandfather supersed
 Round prompts embed the operative contract verbatim — the full round contract, not a convenience
 summary. Each *child-lane* prompt carries, as quoted protocol text, the round-level contract:
 (i) the mission/axes binding — `MISSION.md` and `AXES.md` govern the round and the lane works
-exactly one axis-move; (ii) the L2 minimum — at least 8 L2 lanes in one batched AgentSwarm call
-(the Kimi host surface), a number this file does not own: `MISSION.md` §L2 concurrency is its
-source; (iii) commit-then-push ordering; (iv) push scope; and (v) the L0 side channel — plus the
-five child-lane items: the report path and filename, the commit-before-report ordering, the
-`SHONEN` heading requirement, the commit-hash citation rule, and the lane's write scope. The
+1–3 declared claims, each an axis-move with its own falsifiable before→after on a distinct
+axis, at least one on the lane's lowest non-retired axis; (ii) the L2 minimum — at least 8 L2
+lanes in one batched AgentSwarm call (the Kimi host surface), a number this file does not own:
+`MISSION.md` §L2 concurrency is its source; (iii) commit-then-push ordering; (iv) push scope;
+and (v) the L0 side channel — plus the five child-lane items: the report path and filename, the
+commit-before-report ordering, the `SHONEN` heading requirement, the commit-hash citation rule,
+and the lane's write scope. The
 shipped ROUND-PROMPT template (`templates/round-prompt.md`, operator-side) embeds all of these
 verbatim — the full round contract and all five child-lane items; a dispatched prompt missing any
-of them fails the step-1 fidelity check below. (The upstream fleet's template carried only 1 of the
+of them fails the step-1 fidelity check below. (An earlier fleet template carried only 1 of the
 5 child-lane items — §Appendix, "Prompt embeds contract".) The
 aggregator prompt instead embeds *its* operative set verbatim: report path, the ledger path and
 refresh duty, child-repo commit ownership (its own files, pathspec-limited), the corpus-only write
@@ -108,7 +110,8 @@ scope, and the L2 minimum — a number this file does not own: `MISSION.md` §L2
 source. The protocol prompt embeds its own duties: this file's re-read requirement, the
 integrator-of-record closure steps, and the L2 minimum. This file alone reaches the lanes that
 re-read it (§Appendix, "Prompt embeds contract"); the integrator's report must carry the exact
-corrected `lane_prompt()` text required, since `scripts/` is operator-side.
+corrected `lane_prompt()` addition (the canonical driver uses `render_prompt()` over the
+template) required, since `scripts/` is operator-side.
 Rounds are per-lane counters, not a fleet-global clock: the driver keeps `.ufo/state/<lane>.round`
 and lanes can sit on different round numbers at the same wall-clock moment. `reports/round-<N>/`
 collects whichever lanes ran their Nth round; the integrator closes round `<N>` per lane, not per
@@ -134,6 +137,14 @@ re-grades it `failed` for want of a landed report if the successor never lands i
 a record: a correction to it lands in the correcting round's own report, or as an erratum
 appended after the filed bytes in a new commit and naming the text it supersedes — never a rewrite
 of the filed bytes, labelled or silent.
+Every child-lane round also runs a **frontier step**: it curates `corpus/SOURCES.md` (opened rows
+only, per the contract), records the census before→after, mines at least one of its own mistakes
+into `corpus/lessons/round-<N>.md` under `## Mistakes` (class · evidence · captured-by · fix) or
+pastes the sweep that found none, and files at least one claim of the round as *sourced* — its
+evidence citing an `S###` row. The frontier step is part of the round, not a claim of its own and
+never a substitute for the round's 1–3 axis claims (§Appendix, "Frontier step"). Delivery: the
+operator-side round-prompt template (section 2b, "Frontier step — every round") and this file's
+re-read duty.
 Every dispatched lane writes its report at `.ufo/reports/round-<N>/<id>.md` in the main repo, where
 `<id>` is the roster id (`protocol` and `aggregator` for the two main-repo lanes). A report under
 any other name does not satisfy the contract. The report file's existence is also the respawn
@@ -144,12 +155,24 @@ closure. Minimum content:
 - work performed and evidence pointers (paths, commands, diffs);
 - changes landed in the child repo, each tied to a `LOG.md` entry;
 - cross-domain evidence encountered, with the domain it belongs to;
+- a **Sources & frontier** section recording the frontier step: `SOURCES.md` rows before→after
+  with the counting command, rows added by tier, rows touched old→new, frontier rows advanced; a
+  lane with no `corpus/` writes `SOURCES: unchanged — main-repo lanes hold no corpus/`.
+  Its absence is a conformance defect in the round notes, never a report marker predicate.
+- **Trend verdicts** — one for each `LEARNING.md` trend (`expansion`, `quality`, `discernment`),
+  using `improved | harmed | unchanged | unprovable-but-better`, with evidence and no scalar.
+  Their absence is a conformance defect in the round notes, never a report marker predicate.
 - a `SHONEN.md` checklist assessment for that lane's shokunin, under a `SHONEN` heading with one
   line per box (`[x]` / `[ ]` / `[~]` + pointer). A report without this heading does not satisfy the
   contract even if the same facts appear elsewhere in it; `[~]` means asserted-by-author, not
   skipped. Consequence: it is a conformance defect AND disqualified as evidence in that lane's
   promotion review — the assessment (reports are filed once; the assessment is not) must be re-filed
   under the heading in the next round's report.
+
+The watchdog logs its Sources & frontier marker and applies its source-census gate; it
+does not check trend verdicts or the full claim-admission criteria. Driver completion
+is not admission; independent non-author verification remains required.
+
 A lane whose mission has terminated or been respawned without filing its round report is recorded
 `failed` by the integrator. `failed` covers every lane-round that was prompted or dispatched and has
 no report by closure, including an orphan prompt from a failed launch (step 4). A mission still open
@@ -238,8 +261,14 @@ carrying an unresolved row (step 4). After closing, the integrator:
    Round-entry shape:
    `{round, date, type, lanes: {<id>: <status>}, promotions: [{id, from, to}], minted: [id...], notes}`
    where `<status>` is `ok | failed | not-dispatched | in-flight`. `type`, `closed_at`,
-   `protocol_updates`, and other annotation keys are optional. Semantics under a per-lane-counter
-   driver:
+   `protocol_updates`, and other annotation keys are optional.
+   Future lane-specific closure entries MAY include `lane` (the lane id) and
+   `lane_round` (its own counter) as annotations; they do not re-key last-wins by
+   `(id, entry.round)`. If a future entry carries `trends`, it MUST include exactly
+   one verdict per `LEARNING.md` trend (`expansion`, `quality`, `discernment`), each
+   `improved | harmed | unchanged | unprovable-but-better`; older entries remain
+   unchanged and all existing closure constraints still apply.
+   Semantics under a per-lane-counter driver:
    - **Non-closure entry types are recognized, never silent.** A `type: "mint"` entry records a
      lane-initiated sibling mint: it carries no `lanes` map, is excluded from lane-status tallies,
      and names its mint evidence pointer, the probation note, and whether the roster/`ROADMAP.md`
@@ -379,7 +408,10 @@ a **probe**, and is registered as one.
   `expected.json` MUST pin the digest of every snapshot input file, and the gate verifies those
   digests before comparing verdicts: an edited snapshot is `snapshot_tampered` (could-not-evaluate),
   not a compared verdict, and a baseline without digests is reported `unpinned (legacy)`.
-- **Registry.** The schema is this section's; the rows live in each lane's `SKILL.md`: name,
+- **Registry.** The schema is this section's; a child lane's *registry home* is its own `SKILL.md`.
+  For main-repo lanes (`protocol`, `aggregator`), it is the explicitly lane-owned registry section
+  in root `SCORECARD.md`: protocol above `## Aggregator lane`, aggregator inside its own section;
+  no root `SKILL.md` is required (§Appendix, "Registry home"). Row fields: name,
   `gate|probe`, entry command, verdict map (code → class), self-test command and spelling,
   pinned-value path, write scope, owner. The aggregator ledger stays the routed-defect queue, not a
   second inventory; a fleet index is pointers to lane rows, never copied expected values. Frozen
@@ -398,8 +430,9 @@ a **probe**, and is registered as one.
   dependencies and write scope are the lane's.
 - **Delivery.** This section reaches a lane through the re-read duty, not the driver's prompt
   template (one of five child-lane items): the integrator names the exact `lane_prompt()` addition
-  in its round report, and closure grades no gate conformant until its registry row exists in the
-  lane's own `SKILL.md`.
+  in its round report (canonical driver: `render_prompt()` over `templates/round-prompt.md`), and
+  closure grades no gate conformant until its registry row exists at the lane's *registry home*
+  defined under **Registry** above.
   The closure gate verifies the history pin (§Round-robin step 4) as committed evidence; a pin
   failure is a conformance defect routed under Closure consequence.
 
@@ -413,6 +446,7 @@ a **probe**, and is registered as one.
 | `SHONEN.md` | Promotion checklist to shokunin; generated at mint by copying the canonical template (below) verbatim and deleted on promotion. Gates evolve — when they change, the owning lane regenerates `SHONEN.md` verbatim from the template on its next steered round (the lane is the only allowed writer inside its repo). Verification is mechanical: the seed block (indented lines below) must diff byte-identical modulo `<name>` = the repo's directory name, and marks are confined to the box character plus one indented evidence line per box — `[x] <verifier-id>` or `[~]` with a resolvable pointer; no other prose, added boxes, or removed boxes (§Appendix, "Canonical form") |
 | `AGENTS.md` | Operating rules when working inside this repo |
 | `corpus/` | Proprietary knowledge corpus per `CORPUS.md`: `README.md` index, `knowledge/` sourced domain notes, `lessons/` per-round training lessons; reviewed by the aggregator lane every round |
+| `corpus/SOURCES.md` | Curated source registry, with its versioned contract defined in `CORPUS.md` §"SOURCES.md — where a shokunin learns"; this row points there rather than restating its columns or rules; main-repo lanes hold no `corpus/` |
 | `SCORECARD.md` | Axis scores per `AXES.md`: owned axes → score 0–10 → evidence pointer → last-change round, plus `planned` and `retired`. Every score is a claim: it carries the counting command that produced it and the commit it was measured against, so a reader can re-derive it |
 | `PROTOCOL-APPENDIX.md` | Main repo, protocol-lane owned: the incident digest that motivates `PROTOCOL.md`'s rules, and a REQUIRED sibling input for appendix-pointer verification. Rows are append-only dated incidents; the body's `(§Appendix, "X")` pointers resolve to the row whose first column names `X` |
 
@@ -480,8 +514,13 @@ non-author verifier per **Promotion gates**.
 
 ## Fleet-2 conventions (adopted)
 
-- Expertise axes live in `AXES.md`; each lane owns a named subset and works one axis-move per round,
-  measured in `SCORECARD.md`. An axis-move inherits the evidence standard: before and after numbers
+- Expertise axes live in `AXES.md`; each lane owns a named subset and works 1–3 declared
+  claims per round (each an axis-move on a distinct axis with its own falsifiable
+  before→after; at least one on the lane's lowest non-retired axis; a claim may be a
+  capability acquisition or an exploratory taste-bound claim per `AXES.md`, section *Capabilities*),
+  measured in `SCORECARD.md`. An exploratory claim verifies only as `unprovable-but-better`
+  with a named non-author reviewer on record (`AXES.md`, sections *Capabilities* and
+  *The stagnation nudge*). An axis-move inherits the evidence standard: before and after numbers
   each carry the counting command and the commit they were measured against, and a score no reader
   can re-derive is an opinion, not a measurement. A `SCORECARD.md` axis name not defined in
   `AXES.md` (`novelty`, `consistency`) is worked only if its row carries its mapping to one of the

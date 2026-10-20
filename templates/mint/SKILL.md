@@ -6,7 +6,8 @@ description: Domain specialist — <DOMAIN> — <one-line scope with "quoted tri
 # <name>-shokunin
 
 Shonen seed. Develop: decision tables, error patterns, production checklists,
-anti-patterns, cited sources — verifiable, not generic.
+anti-patterns, and cited sources — verifiable, not generic. Curate opened sources
+in `corpus/SOURCES.md`; capture mistakes in each round's lesson before they recur.
 
 ## Domain
 

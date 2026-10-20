@@ -1,6 +1,6 @@
 ---
 name: shokunin
-description: Shokunin (職人) auto-agent-creation fleet for Kimi Code CLI — mint domain-specialist agents that carry their own logic, then iterate them with one-axis-move craft rounds judged per axis (improved/harmed/unchanged/unprovable-but-better, never scalar scores). Activate on "craft round", "axis move", "grind an axis", minting/creating a specialist agent, running or judging a shokunin round, or fleet/watchdog operations.
+description: Shokunin (職人) orchestrates domain-specialist agents through continual research, source curation, mistakes learning, and evidence-backed craft rounds of 1–3 distinct-axis claims. Verdicts cover claims and the expansion/quality/discernment trends; no scalar scores. Activate on "craft round", "axis move", minting/creating a specialist agent, judging a shokunin round, or fleet/watchdog operations.
 ---
 
 # Shokunin — 職人, the craft fleet
@@ -16,14 +16,14 @@ distinction is load-bearing, not cosmetic:
 
 | UFO (kimi-saucin) | Shokunin (this skill) |
 |---|---|
-| Multi-axis Pareto seat map each round | Per-axis verdicts; ONE axis-move per round |
+| Multi-axis Pareto seat map each round | 1–3 causally separable claims on distinct axes; per-claim verdicts |
 | Any problem, planned wwkd-first | Only domain-specialist agents: mint → iterate → promote |
 | Roster of generalist specialists | Each lane owns exactly one province |
 
 Keep the distinction explicit in every report: never describe a shokunin
 round as "passing Pareto", never import the seat map, never blend verdicts
-into a scalar. A shokunin round is admitted on per-axis verdicts only
-(see Verdict judging below).
+into a scalar. Judge each claim and each learning trend with evidence; a trade
+is reported, not silently admitted (see Running a craft round below).
 
 ## Load order
 
@@ -34,65 +34,66 @@ On activation, load in this order — each layer is binding on the next:
 2. `skills/shokunin/protocol/PROTOCOL-APPENDIX.md` — why each rule exists
    (the incident digest). Consult when a rule seems to not fit; the rule
    still binds until the protocol lane changes it.
-3. `skills/shokunin/protocol/MISSION.md` — the fleet SSOT: fleet shape, lane
-   table, axis assignments, push scope, the L0 side channel.
-4. `skills/shokunin/protocol/AXES.md` + `skills/shokunin/protocol/CORPUS.md`
-   — the six-axis framework and the corpus contract (`corpus/` index,
-   `knowledge/`, `lessons/`).
-5. `skills/shokunin/protocol/LEARNING.md` — the learning path (curation →
-   quality gating → understanding → expanding perspective) and its three
-   per-round trend verdicts: expansion, quality, discernment.
+3. `skills/shokunin/protocol/MISSION.md` — mission contract and deployment
+   binding: fleet shape, lane table, axis assignments, push scope, L0 channel.
+4. `skills/shokunin/protocol/AXES.md` + `CORPUS.md` — the six-axis framework,
+   versioned `corpus/SOURCES.md` contract, and corpus rules.
+5. `skills/shokunin/protocol/LEARNING.md` — curation → quality gating →
+   understanding and mistakes learning → expanding perspective, plus one
+   evidence-backed verdict per trend: expansion, quality, discernment.
 
-Files outside `protocol/` that matter at runtime: `templates/mint/` (the
-canonical 7-file seed kit), `templates/round-prompt.md` (fleet round prompt),
+Files outside `protocol/` that matter at runtime: `templates/mint/` (seven
+root templates plus corpus seeds), `templates/round-prompt.md` (round prompt),
 `templates/MANIFEST.schema.json` (rounds-ledger schema),
-`templates/shokunin.conf.example` (watchdog config), and `scripts/` (the
-fleet driver + mint scaffolder).
+`templates/shokunin.conf.example` (watchdog config), and `scripts/` (watchdog,
+source census and mint scaffolder).
 
 ## Running a craft round (in-session, Kimi-native)
 
-A round is ONE axis-move. Six axes exist — depth, coverage, operability,
-freshness, calibration, adjacency — and a lane owns a subset recorded in its
-`SCORECARD.md`.
+A round declares **1–3 causally separable claims on distinct axes**. Six axes
+exist — depth, coverage, operability, freshness, calibration, adjacency — and a
+lane owns a subset recorded in its `SCORECARD.md`.
 
-1. **Declare the axis set.** Read the lane's `SCORECARD.md` (create it per
-   `AXES.md` if missing). Name the axes in play, each with direction and an
-   observable that decides movement.
-2. **Pick ONE axis.** The lane's lowest axis in `SCORECARD.md`. Saturated or
-   wrong-fit axes may be retired or split — record the reason in
-   `SCORECARD.md`.
-3. **Declare the falsifiable claim.** State the before→after delta that
-   counts as improvement and how it is measured. No claim, no round.
-4. **Do the work.** Land exactly one verifiable improvement. When subagents
-   are warranted, dispatch ONE batched AgentSwarm call with ≥8 lanes:
-   planner+connector / executor+scribe+scout / reviewer+critic split. Measure
-   on the delivered revision, not on intent.
-5. **Judge EVERY axis.** Each axis gets a verdict: `improved`, `harmed`,
-   `unchanged`, or `unprovable-but-better`. **No scalars** — a number is not
-   a verdict.
-6. **Admit or reject.** Admit only if ≥1 axis improved AND none harmed. A
-   trade (one up, one down) is NOT an improvement: report both verdicts and
-   let the operator rule. Never average a trade into an accept.
-7. **Record.** Verdict + evidence concisely: before→after in `SCORECARD.md`
-   (every score is a claim carrying its counting command and measured
-   commit), evidence in `LOG.md` (append-only), report at
-   `.ufo/reports/round-<N>/<lane>.md`, closure in the append-only
-   `MANIFEST.json rounds[]` ledger.
-8. **Honest stop.** If the round harmed an axis or the claim stays
-   unprovable, the round is reported as such and the lane halts progression
-   on that axis. Never force a harmed/unprovable round through, never re-roll
-   the verdict to make the ledger prettier.
+1. **Read and declare.** Open `SCORECARD.md` (create it per `AXES.md` if
+   missing). State each claim's target axis and falsifiable before→after.
+   At least one claim works the lowest-scoring non-retired axis unless the
+   stagnation nudge waives it. Two claims on one axis count as one.
+2. **Choose claim types.** A claim may acquire a capability, demonstrated
+   running in this round and entered in the `SCORECARD.md` capabilities table.
+   At most one claim may be exploratory; it names what improves and why the
+   prior lacked it, then needs a named non-author reviewer to verify
+   `unprovable-but-better`. Without that judgment it is `unprovable`.
+3. **Land and measure all claims.** Each claim must be independently
+   verifiable. Run its counting command before and after, record the score
+   delta, evidence pointer and measured commit in `SCORECARD.md`, and append
+   its motivating evidence to `LOG.md`.
+4. **Run the frontier step in every child-lane round.** Curate opened sources
+   and rejections in `corpus/SOURCES.md`; record census before→after; mine a
+   mistake in the round lesson under `## Mistakes` (class · evidence ·
+   captured-by · fix), or paste the sweep that found none; and cite at least
+   one opened `S###` row from a round claim. This is part of the round, not a
+   fourth claim. Main-repo lanes without a corpus skip it and report
+   `SOURCES: unchanged — main-repo lanes hold no corpus/`.
+5. **Meet the L2 floor.** Every round dispatch at least 8 L2 subagents in
+   one batched AgentSwarm call: planner+connector / executor+scribe+scout /
+   reviewer+critic split. Measure on the delivered revision, not intent.
+6. **Judge and admit.** Verify every claim and report all axis verdicts. Also
+   give one evidence-backed verdict per learning trend (`expansion`, `quality`,
+   `discernment`): `improved`, `harmed`, `unchanged`, or `unprovable-but-better`.
+   Admit only if every claim verifies and no axis is harmed. A trade is not an
+   improvement; report it and let the operator rule.
+7. **Report.** File `.ufo/reports/round-<N>/<lane>.md` with, in order: Work
+   performed (naming the 1–3 claims), Landed changes, Before → after
+   measurements, Sources & frontier, Trend verdicts, and SHONEN. Cite evidence
+   and commit hashes. Sources & frontier is a conformance item, not a marker
+   predicate; a missing Trend verdicts section is likewise status-neutral
+   conformance debt. A contentless report still fails.
+8. **Honest stop.** If any claim is harmed or remains unprovable, report that
+   honestly and halt progression; never reroll a verdict to prettify the ledger.
 
-**Round report shape.** The report at `.ufo/reports/round-<N>/<lane>.md`
-carries, in order: **Work performed** (one bullet per item, each with an
-evidence pointer — path:line, command output, or commit hash); **Landed
-changes** (each tied to a `LOG.md` entry and the commit carrying it);
-**Before → after measurements** (one per claim, with the counting command and
-the commit it was measured against); **SHONEN** (one line per `SHONEN.md`
-box: `[x]` only with a named non-author verifier, `[~]` with a resolvable
-pointer, `[ ]` if untouched). A contentless report is a failed round — the
-watchdog's `report_of()` checks for the SHONEN section and a minimum content
-size, not mere file existence.
+The report closure is appended to the append-only `MANIFEST.json rounds[]`
+ledger. Learning follows `LEARNING.md`; a prompt summary never overrides the
+current protocol or corpus contracts.
 
 **Dormancy and the L0 side channel.** Two consecutive dispatched-and-reported
 rounds with no `LOG.md` activity flag a shonen **dormant** in the round
@@ -116,19 +117,19 @@ own specialists instead of absorbing every new demand into an existing lane.
    existing lane record why its province rejects the demand. That
    rejected-fit record is part of the mint evidence, not a formality — a
    mint without a roster scan is void.
-3. **Scaffold.** Create `<id>-shokunin/` from `templates/mint/` (7 files).
+3. **Scaffold.** Create `<id>-shokunin/` from `templates/mint/` (seven root
+   templates plus corpus seeds, including an empty `corpus/SOURCES.md`).
    The lane's git identity is configured at mint as
    `<id>-shokunin <<id>@shokunin.local>`; every round commit must carry it.
    `scripts/mint-agent.sh --id <id> --domain "<domain>" --fleet-root <root>`
    does this non-interactively and also appends the lane to `shokunin.conf`.
-4. **MINT.md.** Write the reasoning, the cause, the demand instances with
-   evidence pointers, the rejected roster fit, and the claimed domain
-   boundary.
+4. **MINT.md**. Write the reasoning, cause, demand instances with evidence
+   pointers, rejected roster fit, and claimed domain boundary.
 5. **Probation (shonen).** The lane self-iterates through ≥3 verified rounds
-   building `corpus/` + `PROVINCE.md` before any roster row exists.
-   Probation state is recorded as a `MANIFEST.json rounds[]` entry of type
-   `"mint"` (carrying the mint evidence pointer and the probation note), not
-   as a roster row. Only the operator adds the roster row after probation.
+   building `corpus/` + `PROVINCE.md` and completing the frontier step each
+   round before any roster row exists. Record probation as a `type: "mint"`
+   entry in the `MANIFEST.json` rounds array (mint evidence pointer and note),
+   not as a roster row. Only the operator adds the roster row after probation.
 6. **Boundaries.** The minting lane never writes outside its own repo + the
    new sibling's seed files; it never edits the `MANIFEST.json` roster or a
    sibling's post-seed content.
@@ -144,8 +145,8 @@ touching `.ufo/fleet-wrap`; remove it to resume. The driver sources
 table (`<id>|<repo>|<axes>`) is the roster, and lane launch goes through
 `SUBSTRATE_CMD` with `%C` (lane cwd) / `%P` (prompt file) expansion, so the
 driver stays substrate-neutral — no hardcoded hosts, models, or absolute
-paths. `scripts/mint-agent.sh` scaffolds and wires a mint non-interactively.
-Both scripts are bash + coreutils only.
+paths. `scripts/sources-census.sh` validates source registries;
+`scripts/mint-agent.sh` scaffolds and wires a mint non-interactively.
 
 ## Promotion gates
 
@@ -171,8 +172,8 @@ its verifier and its evidence.
 
 ## Invariants
 
-Restated faithfully from upstream `PROTOCOL.md` §Invariants — the full text
-with appendices is in `protocol/`:
+The canonical protocol in `protocol/PROTOCOL.md` is the full contract and
+authority; this skill is a concise operational guide, not a competing source:
 
 - **Specialize, don't generalize.** A shokunin's `SKILL.md` contains cited,
   verifiable knowledge of its domain — never generic agent advice.
@@ -207,10 +208,10 @@ with appendices is in `protocol/`:
 ## Pointers
 
 - `skills/shokunin/protocol/` — the full contract (`PROTOCOL.md`,
-  `PROTOCOL-APPENDIX.md`, `MISSION.md`, `AXES.md`, `CORPUS.md`).
-- `templates/` — mint kit (`mint/`, 7 files), `MANIFEST.schema.json`,
-  `round-prompt.md`, `shokunin.conf.example`.
-- `scripts/` — `shokunin-watchdog.sh` (fleet driver),
-  `mint-agent.sh` (non-interactive mint).
+  `PROTOCOL-APPENDIX.md`, `MISSION.md`, `AXES.md`, `CORPUS.md`, `LEARNING.md`).
+- `templates/` — mint kit (`mint/`, seven root templates plus corpus seeds),
+  `MANIFEST.schema.json`, `round-prompt.md`, `shokunin.conf.example`.
+- `scripts/` — `shokunin-watchdog.sh` (fleet driver), `sources-census.sh`
+  (corpus source registry), and `mint-agent.sh` (non-interactive mint).
 - `commands/shokunin.md` — the `/shokunin` entrypoint verbs (round / mint /
   fleet).
